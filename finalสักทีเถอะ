@@ -510,8 +510,6 @@ int main(){
     if(!num||num<0)
     {
         cout<<"Invalid input\nTry again!!\n";
-        cin.clear();
-        cin.ignore(5000,'\n');
     }
 	else if(num==0)
     {
