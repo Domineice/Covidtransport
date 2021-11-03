@@ -8,336 +8,11 @@ using namespace std;
 #include<vector>
 #include<stdio.h>
 #include <iomanip>
+#include "order.h"
+#include "town.h"
+#include "family.h"
+#include "building.h"
 
-
-class order
-{
-private:
-    string famname;
-    double timein;
-    double timeout;
-public:
-    order(string name,double in,double out)
-    {
-        famname=name;
-        timein=in;
-        timeout=out;
-    }
-    void shownode()
-    {
-        //cout<<fixed();
-        cout <<setprecision(2)<<fixed;
-        cout<<famname<<" family go to shop between "<<timein<<" and "<<timeout<<endl;
-    }
-    double returnin()
-    {
-        return timein;
-    }
-};
-
-class  family{
-		int time[36];
-		string name;
-		family* next;
-	public:
-		family(string);
-		book(int i,int n){
-		    //cout<<i<<"   "<<n<<endl;
-            time[i]=n;
-		}
-		void display(){
-		    cout<<"Family name:"<<name<<endl;
-            for(int i=0;i<36;i++){
-                cout<<time[i];
-                if(i%2!=0)
-                    cout<<" ";
-            }
-            cout<<endl;
-		}
-		string getname(){
-            return name;
-		}
-		int gettime(int i){
-            return time[i];
-		}
-		void show_node();
-        void insert(family*&);
-        family* move_next();
-		~family();
-};
-
-family::family(string s){
-            name=s;
-            for(int i=0;i<36;i++){
-                time[i]=0;
-            }
-}
-
-family::~family(){
-    // cout<<name<<" has been out.\n";
-}
-
-family* family::move_next(){
-      return next;
-}
-void  family:: show_node(){
-         cout<<"Family name:"<<name<<endl;
- }
-void family::insert(family*& x){
-     x->next=this;
-
-     }
-
-class town{
-	private:
-		int size;
-		family*head;
-	public:
-		void add_family(family*&);
-		void show_all();
-		family* find_fam(string);
-		int getsize(){
-            return size;
-		}
-		town();
-		~town();
-};
-
-town::town(){
-	size=0;
-	head=NULL;
-}
-
-town::~town(){
-	int i;
-	family *t;
-	for(i=0;i<size;i++){
-            t=head;
-             head=t->move_next();
-             delete(t);
-         }
-}
-
-family* town::find_fam(string s){
-        int i;
-        int check=0;
-        family* t=head;
-        for(i=0;i<size;i++){
-            if(s.compare(t->getname())==0){
-                check=1;
-                return t;
-            }
-            t=t->move_next();
-        }
-        if(check==0){
-            return NULL;
-        }
-}
-
-void town::show_all(){
-     family* t=head;
-     int i;
-     for(i=0;i<size;i++){
-         t->show_node();
-         t=t->move_next();
-     }
-}
-
-void town::add_family(family *&A){
-
-          head->insert(A);
-          head=A;
-
-       size++;
-
- }
-
-class building{
-private:
-    int time[36];
-    string name;
-    double open;
-    double close;
-    int people;
-    vector<order> orderlist;
-    vector<int> gotoshop;
-public:
-    building(string);
-    building(string,int);
-    building(string,int,double,double);
-    ~building();
-    void addorder(string nam,double in,double out)
-    {
-        orderlist.push_back(order(nam,in,out));
-        for(int i=0;i<orderlist.size();i++)
-        {
-            for(int j=i+1;j<orderlist.size();j++)
-            {
-                if(orderlist[i].returnin()>orderlist[j].returnin())
-                {
-                    swap(orderlist[i],orderlist[j]);
-                }
-            }
-        }
-    }
-    void showorder()
-    {
-        for(int i=0;i<orderlist.size();i++)
-        {
-            cout<<"     "<<i+1<<") ";
-            orderlist[i].shownode();
-        }
-    }
-    int getnumpeople()
-    {
-        return gotoshop.size();
-    }
-    void checkadd(int x)
-    {
-        for(int i=0;i<gotoshop.size();i++)
-        {
-            if(gotoshop[i]==x)
-            {
-                return;
-            }
-        }
-        gotoshop.push_back(x);
-        return;
-    }
-    void operator+(int x)
-    {
-        ++time[x];
-    }
-    int getpeople()
-    {
-        return people;
-    }
-    double getopen()
-    {
-        return open;
-    }
-    double getclose()
-    {
-        return close;
-    }
-    int gettime(int x)
-    {
-        return time[x];
-    }
-    void shownode()
-    {
-        cout<<"Shop name :"<<name<<endl<<"Max people:"<<people<<endl<<"Open time :"<<open<<endl<<"Close time:"<<close<<endl;
-      /*  for(int i=0;i<36;i++)
-        {
-            cout<<time[i];
-            if(i%2!=0)
-                cout<<" ";
-        }
-
-        cout<<endl;*/
-        cout<<endl<<"======================================================================\n";
-
-    }
-    void showtime()
-    {
-          for(int i=0;i<36;i++)
-        {
-            cout<<time[i];
-            if(i%2!=0)
-                cout<<" ";
-        }
-
-        cout<<endl;
-    }
-    string getname(){
-    	return name;
-	}
-};
-building::building(string nam,int peo,double ope,double clo)
-{
-    name=nam;
-    people=peo;
-    open=ope;
-    close=clo;
-    int op=open*2-8;
-    system("CLS");
-    cout<<"Shop "<<name<<" register successful\n";
-    if(open!=(int)open)
-    {
-        op++;
-    }
-    int cl=close*2-8;
-    if(close!=(int)close)
-    {
-        cl++;
-    }
-    for(int i=0;i<36;i++)
-    {
-        if(i>=op&&i<cl)
-            time[i]=0;
-        else
-            time[i]=people;
-    }
-    shownode();
-}
-building::building(string nam,int peo)
-{
-    system("CLS");
-    name=nam;
-    people=peo;
-    open=6.00;
-    close=18.00;
-    int op=open*2-8;
-    cout<<"Shop "<<name<<" register successful\n";
-    if(open!=(int)open)
-    {
-        op++;
-    }
-    int cl=close*2-8;
-    if(close!=(int)close)
-    {
-        cl++;
-    }
-    for(int i=0;i<36;i++)
-    {
-        if(i>=op&&i<cl)
-            time[i]=0;
-        else
-            time[i]=people;
-    }
-    shownode();
-}
-building::building(string nam)
-{
-    system("CLS");
-    name=nam;
-    people=1;
-    open=6.00;
-    close=18.00;
-    int op=open*2-8;
-    cout<<"Shop "<<name<<" register successful\n";
-    if(open!=(int)open)
-    {
-        op++;
-    }
-    int cl=close*2-8;
-    if(close!=(int)close)
-    {
-        cl++;
-    }
-    for(int i=0;i<36;i++)
-    {
-        if(i>=op&&i<cl)
-            time[i]=0;
-        else
-            time[i]=people;
-    }
-    shownode();
-}
-building::~building()
-{
-    //cout<<name<<" has been close.\n";
-}
 int gettime(double ope)
 {
     int op=ope*2-8;
@@ -374,7 +49,8 @@ void printbuild(building bb)
                 for(int xxx=bb.gettime(i);xxx>0;xxx/=10)
                     x++;
                 x=6-x;
-
+if(bb.gettime(i)==0)
+                    x--;
                 if(bb.gettime(i)<bb.getpeople())
                     cout<<"     ";
                 else
@@ -400,30 +76,32 @@ void printbuild(building bb)
                 for(int xxx=bb.gettime(i);xxx>0;xxx/=10)
                     x++;
                 x=6-x;
-
+                if(bb.gettime(i)==0)
+                    x--;
                 if(bb.gettime(i)<bb.getpeople())
                     cout<<"     ";
                 else
                     cout<<"X    ";
                 for(int j=0;j<x;j++)
                     cout<<" ";
+
                 cout<<bb.gettime(i)<<"|\n";
         }
         else
             xx+=0.70;
 
     }
-    cout<<"|_____________|______________________|\n";
+    cout<<"|_____________|_____________________|\n";
 }
 void fflush_stdin()
 { int c;
-c = getch(); while ((c = getch()) != '\r' /*&& c != EOF*/); }
+while ((c = _getch()) != '\r' /*&& c != EOF*/); }
 void letsgo()
 {
     cout<<"\n     Press Enter to continue.......\n";
     cin.ignore();
     cin.clear();
-   // getche();
+   // _getche();
     fflush_stdin();
     system ("CLS");
     return;
@@ -431,7 +109,7 @@ void letsgo()
 void avilableshop(building bb)
 {
     cout <<setprecision(2)<<fixed;
-    bb.showtime();
+    //bb.showtime();
     cout<<"Time table of "<<bb.getname()<<" shop\n";
     cout<<"_____________________________________\n";
     cout<<"|     Time    |   Full or available  |\n";
@@ -483,18 +161,17 @@ void avilableshop(building bb)
 }
 int main(){
     cout <<setprecision(2)<<fixed;
-	int i,j,k,num,full,openmin,closemin,openhour,closehour;
+	int i,num,full,openmin,closemin,openhour,closehour;
 	double open,close;
 	string name;
 	char choice;
 	string fam_name;
-	family* temp;
 	family *pt;
 	town city;
 	int n=0;
 	char more_st,more_fam;
 	string res;
-	int ent_h,ent_mn,out_h,out_mn,thick;
+	int ent_h,ent_mn,out_h,out_mn;
 	double ent,out;
 	int check,entt,outt;
 	int t;
@@ -506,8 +183,6 @@ int main(){
     if(!num||num<0)
     {
         cout<<"Invalid input\nTry again!!\n";
-        cin.clear();
-        cin.ignore(5000,'\n');
     }
 	else if(num==0)
     {
@@ -526,7 +201,6 @@ int main(){
 	}
     int oo=0;
 	vector<building> LL;
-	vector<family> T;
 	//system("CLS");
 	for(i=0;i<num;i++)
     {
@@ -553,10 +227,10 @@ int main(){
         {
             cout<<"Do you want to input full people(Y/N)?\n     ";
 
-            choice=getch();
+            choice=_getch();
             while(choice!='Y'&&choice!='y'&&choice!='N'&&choice!='n')
             {
-                 choice=getch();
+                 choice=_getch();
             }
             if(choice=='Y'||choice=='y')
             {
@@ -570,10 +244,10 @@ int main(){
                 while(1)
                 {
                     cout<<"Do you want to input open time and close time(Y/N)?\n     ";
-                    choice=getch();
+                    choice=_getch();
             while(choice!='Y'&&choice!='y'&&choice!='N'&&choice!='n')
             {
-                 choice=getch();
+                 choice=_getch();
             }
                     if(choice=='Y'||choice=='y')
                     {
@@ -728,17 +402,17 @@ letsgo();
     {
         LL[i].shownode();
     }*/
-    int oper=0,oper2=0,numshop,faminint,famoutint,tt;
+    int oper=0,numshop,faminint,tt;
     double famin,famout;
     char returntime,press2,press;
     string shopname,famname;
     while(1)
     {
         cout<<"Next function?\n     Press 1 for add shop\n     Press 2 for add time to shop\n     Press 3 for show shop time\n     Press 4 for show family time\n     Press 5 for exit\n     Press :";
-        press=getch();
+        press=_getch();
             while(press!='1'&&press!='2'&&press!='3'&&press!='4'&&press!='5')
             {
-                 press=getch();
+                 press=_getch();
             }
         system("CLS");
         if(press=='1')
@@ -766,10 +440,10 @@ letsgo();
             while(1)
             {
                 cout<<"Do you want to input full people(Y/N)?\n     ";
-                choice=getch();
+                choice=_getch();
             while(choice!='Y'&&choice!='y'&&choice!='N'&&choice!='n')
             {
-                 choice=getch();
+                 choice=_getch();
             }
                 if(choice=='Y'||choice=='y')
                 {
@@ -781,10 +455,10 @@ letsgo();
                     while(1)
                     {
                         cout<<"Do you want to input open time and close time(Y/N)?\n     ";
-                        choice=getch();
+                        choice=_getch();
             while(choice!='Y'&&choice!='y'&&choice!='N'&&choice!='n')
             {
-                 choice=getch();
+                 choice=_getch();
             }
                         if(choice=='Y'||choice=='y')
                         {
@@ -960,7 +634,7 @@ letsgo();
             {
 
                 cout<<"***Available shop****\n";
-                for(int i=0;i<LL.size();i++)
+                for(unsigned int i=0;i<LL.size();i++)
                 {
                 cout<<"     "<<i+1<<") "<<LL[i].getname()<<" shop\n";
                 }
@@ -1064,7 +738,7 @@ letsgo();
                             {
                                 cout<<"This time is full\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1080,7 +754,7 @@ letsgo();
                             {
                                 cout<<"Invalid input\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1096,7 +770,7 @@ letsgo();
                             {
                                 cout<<"This time you must stay home\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1112,7 +786,7 @@ letsgo();
                             {
                                 cout<<"Cannot add open time more than close time\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1128,7 +802,7 @@ letsgo();
                             {
                                 cout<<"You must add open and close time X.00 or X.30\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1144,7 +818,7 @@ letsgo();
                             {
                                 cout<<"You have already reserved this time\n";
                                 cout<<"Press F for select shop again, any key for add time again\n     ";
-                                returntime=getch();
+                                returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                                 {
                                     cin.clear();
@@ -1166,10 +840,10 @@ letsgo();
                         while(1)
                         {
                             cout<<"Do you want to reserve more(Y/N)?\n     ";
-                            more_st=getch();
+                            more_st=_getch();
             while(more_st!='Y'&&more_st!='y'&&more_st!='N'&&more_st!='n')
             {
-                 more_st=getch();
+                 more_st=_getch();
             }
                             system ("CLS");
                             if(more_st=='N'||more_st=='n')
@@ -1195,7 +869,7 @@ letsgo();
                 {
                         cout<<"Cannot find "<<err<<" shop.\n";
                         cout<<"Press F for cancel, any key for add shop again\n     ";
-                        returntime=getch();
+                        returntime=_getch();
                                 if(returntime=='F'||returntime=='f')
                         {
                             cin.clear();
@@ -1213,11 +887,10 @@ letsgo();
                 while(1)
                 {
                     cout<<"Do other families want to reserve(Y/N)?\n     ";
-                    cin>>more_fam;
-                    more_fam=getch();
+                    more_fam=_getch();
             while(more_fam!='Y'&&more_fam!='y'&&more_fam!='N'&&more_fam!='n')
             {
-                 more_fam=getch();
+                 more_fam=_getch();
             }
                     system ("CLS");
                     if(more_fam=='N'||more_fam=='n')
@@ -1259,7 +932,7 @@ letsgo();
                 while(1)
                 {
                     cout<<"***Registered shop****\n";
-                    for(int i=0;i<LL.size();i++)
+                    for(unsigned int i=0;i<LL.size();i++)
                     {
                         cout<<"     "<<i+1<<") "<<LL[i].getname()<<" shop\n";
                     }cout<<endl;
@@ -1289,7 +962,7 @@ letsgo();
 
                     }
                     cout<<"Press F for check other shop \nPress any key for return to main menu\n     ";
-                        press2=getch();
+                        press2=_getch();
                         if(press2=='F'||press2=='f')
                         {
                             cin.clear();
@@ -1357,7 +1030,7 @@ letsgo();
                         cout<<"This family cannot be found\n";
                     }
                     cout<<"Press F for check other family \nPress any key for return to main menu\n";
-                        press2=getch();
+                        press2=_getch();
                         system ("CLS");
                         if(press2=='F'||press2=='f')
                         {
